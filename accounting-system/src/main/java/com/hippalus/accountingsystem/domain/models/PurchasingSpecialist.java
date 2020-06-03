@@ -1,5 +1,6 @@
 package com.hippalus.accountingsystem.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hippalus.accountingsystem.domain.commands.PurchasingSpecialistCreateCommand;
 import lombok.*;
 
@@ -9,13 +10,13 @@ import javax.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
 @Getter
-@ToString
-@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "purchasing_specialist", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
@@ -31,11 +32,13 @@ public class PurchasingSpecialist {
     @Email
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "purchasingSpecialist",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
     private Set<Bill> bills = new HashSet<>();
 
-    @Transient//TODO Parameterize And Configurable
-    private Money limit=Money.of(BigDecimal.valueOf(200));
+    //TODO Parameterize And Configurable
+    @Transient
+    private static final Money limit=Money.of(BigDecimal.valueOf(200));
 
     @Builder
     private PurchasingSpecialist(Long id, String firstName, String lastName, String email, Set<Bill> bills) {
@@ -53,6 +56,7 @@ public class PurchasingSpecialist {
                 .email(cmd.getEmail())
                 .firstName(cmd.getFirstName())
                 .lastName(cmd.getLastName())
+                .bills(new HashSet<>())
                 .build();
     }
 
@@ -66,11 +70,19 @@ public class PurchasingSpecialist {
     public void addBill(Bill bill) {
         if (this.calculateTotalPriceOfApprovedBills()
                 .add(bill.totalPrice())
-                .isLessThan(this.limit)) {
+                .isLessThan(limit)) {
             bill.approve();
+
         } else {
             bill.unApprove();
         }
+        bills.add(bill);
+        bill.setPurchasingSpecialist(this);
+    }
+    public void removeBill(Bill bill){
+        bills.remove(bill);
+        bill.setPurchasingSpecialist(null);
+
     }
 
     private void checkArguments(String firstName, String lastName, String email) {
@@ -83,5 +95,31 @@ public class PurchasingSpecialist {
         if (isEmpty(email)) {
             throw new IllegalArgumentException("E-mail is required.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PurchasingSpecialist that = (PurchasingSpecialist) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(firstName, that.firstName) &&
+                Objects.equals(lastName, that.lastName) &&
+                Objects.equals(email, that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, email);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PurchasingSpecialist.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("firstName='" + firstName + "'")
+                .add("lastName='" + lastName + "'")
+                .add("email='" + email + "'")
+                .toString();
     }
 }

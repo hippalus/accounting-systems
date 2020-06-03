@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    username: sa
+    password:
+    hikari:
+      jdbc-url: jdbc:h2:mem:db1;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE
+      driver-class-name: org.h2.Driver
+      pool-name: accountingSystemCP
+      connection-test-query: SELECT 1
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    show-sql: true
+    open-in-view: false

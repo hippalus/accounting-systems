@@ -3,6 +3,7 @@ package com.hippalus.accountingsystem.domain.models;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import java.util.Objects;
 @Embeddable
 public final class Money implements Comparable<Money> {
     public static final Money ZERO = new Money(BigDecimal.ZERO);
-
+    @Column(name = "price")
     private BigDecimal value;
 
     private Money(BigDecimal value) {

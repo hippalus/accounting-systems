@@ -49,7 +49,7 @@ public final class BillSpecification implements Specification<Bill> {
         }
         return cq.where(cb.and(predicates.toArray(new Predicate[0])))
                 .distinct(true)
-                .orderBy(cb.desc(root.join(PURCHASING_SPECIALIST).get("firstName")))
+                //.orderBy(cb.desc(root.join(PURCHASING_SPECIALIST).get("firstName")))
                 .getRestriction();
     }
 }

@@ -1,5 +1,6 @@
 package com.hippalus.accountingsystem.application.services;
 
+import com.hippalus.accountingsystem.application.exceptions.DataNotFoundException;
 import com.hippalus.accountingsystem.application.mappers.BillMapper;
 import com.hippalus.accountingsystem.application.mappers.BillStateMapper;
 import com.hippalus.accountingsystem.application.requests.BillSaveRequest;
@@ -27,21 +28,6 @@ public class BillServiceImp implements BillService {
 
     private final BillRepository repository;
     private final BillMapper billMapper;
-    private final PurchasingSpecialistService purchasingSpecialistService;
-
-    @Override
-    @Transactional
-    public BillResponse save(BillSaveRequest request) {
-        final var billCreateCommand = createRequestToCreateCommand(request);
-        var newBill = Bill.create(billCreateCommand);
-        var purchasingSpecialistResponse = purchasingSpecialistService.findByEmail(request.getEmail());
-        if (purchasingSpecialistResponse.isPresent()) {
-            var purchasingSpecialist = purchasingSpecialistService.getMapper()
-                    .purSpecResToPurSpec(purchasingSpecialistResponse.get());
-            purchasingSpecialist.addBill(newBill);
-        }
-        return billMapper.billToBillResponse(repository.saveAndFlush(newBill));
-    }
 
     @Override
     public List<BillResponse> findByFilter(SearchBillByFilterRequest request) {
@@ -59,6 +45,14 @@ public class BillServiceImp implements BillService {
                 .map(billMapper::billToBillResponse)
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    @Transactional(isolation = REPEATABLE_READ)
+    public BillResponse findById(Long id) {
+        return repository.findById(id)
+                .map(billMapper::billToBillResponse)
+                .orElseThrow(() -> new DataNotFoundException("Bill not found"));
     }
 
     private SearchBillCommand searchReqToSearchCommand(SearchBillByFilterRequest request) {

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class PurchasingSpecialistMapperImpl implements PurchasingSpecialistMapper {
+public class    PurchasingSpecialistMapperImpl implements PurchasingSpecialistMapper {
 
     @Override
     public PurchasingSpecialistResponse purSpecToPurSpecRes(PurchasingSpecialist entity) {
@@ -65,9 +65,6 @@ public class PurchasingSpecialistMapperImpl implements PurchasingSpecialistMappe
         } else {
             var builder = Bill.builder();
             builder.id(response.getId());
-            builder.purchasingSpecialist(
-                    this.purSpecResToPurSpec(
-                            response.getPurchasingSpecialist()));
             builder.billNo(response.getBillNo());
             builder.product(ProductMapper.productResToProduct(response.getProduct()));
             builder.state(BillStateMapper.billStateToEnum(response.getState()));
@@ -91,7 +88,6 @@ public class PurchasingSpecialistMapperImpl implements PurchasingSpecialistMappe
             }
 
             billResponse.product(this.productToProductResponse(bill.getProduct()));
-            billResponse.purchasingSpecialist(this.purSpecToPurSpecRes(bill.getPurchasingSpecialist()));
             return billResponse.build();
         }
     }

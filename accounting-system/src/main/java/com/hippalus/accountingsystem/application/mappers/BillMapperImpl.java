@@ -23,7 +23,6 @@ public class BillMapperImpl implements BillMapper {
             return null;
         } else {
             var billResponse = BillResponse.builder();
-            billResponse.purchasingSpecialist(this.purchasingSpecialistToPurchasingSpecialistResponse(entity.getPurchasingSpecialist()));
             billResponse.product(this.productToProductResponse(entity.getProduct()));
             billResponse.id(entity.getId());
             billResponse.billNo(entity.getBillNo());
@@ -42,9 +41,6 @@ public class BillMapperImpl implements BillMapper {
         } else {
             var builder = Bill.builder();
             builder.id(response.getId());
-            builder.purchasingSpecialist(
-                    this.purchasingSpecialistResponseToPurchasingSpecialist(
-                            response.getPurchasingSpecialist()));
             builder.billNo(response.getBillNo());
             builder.product(ProductMapper.productResToProduct(response.getProduct()));
             return builder.build();

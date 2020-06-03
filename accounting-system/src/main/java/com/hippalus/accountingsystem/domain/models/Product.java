@@ -3,10 +3,7 @@ package com.hippalus.accountingsystem.domain.models;
 import com.hippalus.accountingsystem.domain.commands.ProductCreateCommand;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.isNull;
@@ -17,6 +14,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table(name = "product", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "price"})})
 public class Product {
     @Id
     @NotNull
@@ -28,25 +26,26 @@ public class Product {
     private Money price;
 
     @Builder
-    private Product(Long id,String name, Money price) {
+    private Product(Long id, String name, Money price) {
         checkArguments(name, price);
-        this.id=id;
+        this.id = id;
         this.name = name;
         this.price = price;
     }
 
-    public static Product create(ProductCreateCommand cmd){
+    public static Product create(ProductCreateCommand cmd) {
         return Product.builder()
                 .name(cmd.getName())
                 .price(Money.of(cmd.getPrice()))
                 .build();
 
     }
+
     private void checkArguments(String name, Money price) {
-        if(isEmpty(name)){
+        if (isEmpty(name)) {
             throw new IllegalArgumentException("Product name is required");
         }
-        if (isNull(price)){
+        if (isNull(price)) {
             throw new IllegalArgumentException("Product price is required");
         }
     }
