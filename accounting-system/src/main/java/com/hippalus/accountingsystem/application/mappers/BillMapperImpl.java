@@ -23,7 +23,9 @@ public class BillMapperImpl implements BillMapper {
             return null;
         } else {
             var billResponse = BillResponse.builder();
-            billResponse.product(this.productToProductResponse(entity.getProduct()));
+            billResponse.products(entity.getProducts().stream()
+                    .map(this::productToProductResponse)
+                    .collect(Collectors.toList()));
             billResponse.id(entity.getId());
             billResponse.billNo(entity.getBillNo());
             if (entity.getState() != null) {
@@ -42,7 +44,9 @@ public class BillMapperImpl implements BillMapper {
             var builder = Bill.builder();
             builder.id(response.getId());
             builder.billNo(response.getBillNo());
-            builder.product(ProductMapper.productResToProduct(response.getProduct()));
+            builder.products(response.getProducts().stream()
+                    .map(ProductMapper::productResToProduct)
+                    .collect(Collectors.toList()));
             return builder.build();
         }
     }
@@ -99,6 +103,5 @@ public class BillMapperImpl implements BillMapper {
     protected ProductResponse productToProductResponse(Product product) {
         return ProductMapper.productToProductRes(product);
     }
-
 
 }

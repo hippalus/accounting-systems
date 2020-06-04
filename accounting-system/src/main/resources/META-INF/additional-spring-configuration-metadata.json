@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "purchasingspecialist.limitValue",
+      "type": "java.lang.String",
+      "description": "Money limit value of purchasing specialist."
+  }
+] }

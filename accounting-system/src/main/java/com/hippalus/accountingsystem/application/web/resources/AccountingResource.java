@@ -6,7 +6,6 @@ import com.hippalus.accountingsystem.application.responses.BillResponse;
 import com.hippalus.accountingsystem.application.responses.PurchasingSpecialistResponse;
 import com.hippalus.accountingsystem.application.services.BillService;
 import com.hippalus.accountingsystem.application.services.PurchasingSpecialistService;
-import com.hippalus.accountingsystem.domain.models.PurchasingSpecialist;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,32 +16,39 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/accounting")
 @RequiredArgsConstructor
 public class AccountingResource {
     private final PurchasingSpecialistService specialistService;
     private final BillService  billService;
 
-    @PostMapping("/api/v1/bills")
+    @PostMapping("/addbill")
     public ResponseEntity<PurchasingSpecialistResponse> addBill(@Valid @RequestBody BillSaveRequest request) throws URISyntaxException {
         final var billResponse = specialistService.addBill(request);
         return ResponseEntity
-                .created(new URI("/api/v1/bills/" + billResponse.getId()))
+                .created(new URI("/api/v1/accounting/purchasingspecialist/" + billResponse.getId()))
                 .body(billResponse);
     }
 
-    @GetMapping("/api/v1/bills/{id}")
-    public ResponseEntity<BillResponse> getBill(@PathVariable Long id) {
-        return ResponseEntity.ok(billService.findById(id));
+    @GetMapping("/purchasingspecialist/{id}")
+    public ResponseEntity<PurchasingSpecialistResponse> getBillsByPurchasingSpecialist(@PathVariable Long id) {
+        return ResponseEntity.ok(specialistService.findById(id));
     }
 
-    @GetMapping("/api/v1/bills")
-    public ResponseEntity<List<BillResponse>> getAllBills() {
-        return ResponseEntity.ok(billService.findAllBills());
+    @GetMapping("/purchasingspecialist")
+    public ResponseEntity<List<PurchasingSpecialistResponse>> getAllPurchasingSpecialist() {
+        return ResponseEntity.ok(specialistService.findAll());
     }
 
-    @PostMapping("/api/v1/bills/search")
+
+    @PostMapping("/bills/search")
     public ResponseEntity<List<BillResponse>> getBillsByFilter(@RequestBody SearchBillByFilterRequest request) {
         return ResponseEntity.ok(billService.findByFilter(request));
+    }
+
+    @GetMapping("/bills")
+    public ResponseEntity<List<BillResponse>> getAllBills() {
+        return ResponseEntity.ok(billService.findAllBills());
     }
 
 }

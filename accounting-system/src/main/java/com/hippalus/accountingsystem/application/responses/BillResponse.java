@@ -2,6 +2,8 @@ package com.hippalus.accountingsystem.application.responses;
 
 import lombok.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -17,7 +19,8 @@ public class BillResponse {
 
     private String state;
     @NotNull
-    private ProductResponse product;
+    @Builder.Default
+    private List<ProductResponse> products =new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
@@ -27,7 +30,7 @@ public class BillResponse {
         BillResponse bill = (BillResponse) o;
 
         if (!Objects.equals(id, bill.id)) return false;
-        if (!Objects.equals(product, bill.product)) return false;
+        if (!Objects.equals(products, bill.products)) return false;
         if (!Objects.equals(billNo, bill.billNo)) return false;
         return state.equals(bill.state);
     }
@@ -35,7 +38,7 @@ public class BillResponse {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (product != null ? product.hashCode() : 0);
+        result = 31 * result + (products != null ? products.hashCode() : 0);
         result = 31 * result + (billNo != null ? billNo.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
         return result;
@@ -47,7 +50,7 @@ public class BillResponse {
                 .add("id=" + id)
                 .add("billNo='" + billNo + "'")
                 .add("state='" + state + "'")
-                .add("product=" + product)
+                .add("product=" + products)
                 .toString();
     }
 }

@@ -1,14 +1,12 @@
 package com.hippalus.accountingsystem.application.services;
 
-import com.hippalus.accountingsystem.application.mappers.BillStateMapper;
+import com.hippalus.accountingsystem.application.exceptions.DataNotFoundException;
 import com.hippalus.accountingsystem.application.requests.BillSaveRequest;
-import com.hippalus.accountingsystem.application.requests.SearchBillByFilterRequest;
 import com.hippalus.accountingsystem.application.responses.PurchasingSpecialistResponse;
 import com.hippalus.accountingsystem.application.mappers.PurchasingSpecialistMapper;
 import com.hippalus.accountingsystem.domain.commands.BillCreateCommand;
 import com.hippalus.accountingsystem.domain.commands.ProductCreateCommand;
 import com.hippalus.accountingsystem.domain.commands.PurchasingSpecialistCreateCommand;
-import com.hippalus.accountingsystem.domain.commands.SearchBillCommand;
 import com.hippalus.accountingsystem.domain.models.Bill;
 import com.hippalus.accountingsystem.domain.models.PurchasingSpecialist;
 import com.hippalus.accountingsystem.domain.repository.PurchasingSpecialistRepository;
@@ -16,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import static org.springframework.transaction.annotation.Isolation.*;
 
 
@@ -26,8 +27,6 @@ public class PurchasingSpecialistServiceImp implements PurchasingSpecialistServi
 
     private final PurchasingSpecialistRepository repository;
     private final PurchasingSpecialistMapper purchasingSpecialistMapper;
-
-
     @Override
     @Transactional(isolation = REPEATABLE_READ)
     public Optional<PurchasingSpecialistResponse> findByEmail(String email) {
@@ -58,6 +57,21 @@ public class PurchasingSpecialistServiceImp implements PurchasingSpecialistServi
         }
     }
 
+    @Override
+    @Transactional(readOnly = true,isolation = REPEATABLE_READ)
+    public PurchasingSpecialistResponse findById(Long id) {
+        final var purchasingSpecialist = repository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Purchasing specialist not found"));
+        return purchasingSpecialistMapper.purSpecToPurSpecRes(purchasingSpecialist);
+    }
+
+    @Override
+    @Transactional(readOnly = true,isolation = REPEATABLE_READ)
+    public List<PurchasingSpecialistResponse> findAll() {
+        return repository.findAll().stream()
+                .map(this.purchasingSpecialistMapper::purSpecToPurSpecRes)
+                .collect(Collectors.toList());
+    }
 
 
     private BillCreateCommand createRequestToCreateCommand(BillSaveRequest request) {

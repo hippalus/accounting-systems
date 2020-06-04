@@ -1,14 +1,15 @@
 package com.hippalus.accountingsystem.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hippalus.accountingsystem.ApplicationStartupConfig;
 import com.hippalus.accountingsystem.domain.commands.PurchasingSpecialistCreateCommand;
 import lombok.*;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -36,12 +37,15 @@ public class PurchasingSpecialist {
     @JsonIgnore
     private Set<Bill> bills = new HashSet<>();
 
-    //TODO Parameterize And Configurable
     @Transient
-    private static final Money limit=Money.of(BigDecimal.valueOf(200));
+    private static Money limit;
 
+    public void setLimit(){
+        limit=ApplicationStartupConfig.LIMIT;
+    }
     @Builder
     private PurchasingSpecialist(Long id, String firstName, String lastName, String email, Set<Bill> bills) {
+        setLimit();
         checkArguments(firstName, lastName, email);
         this.id = id;
         this.firstName = firstName;
@@ -84,6 +88,8 @@ public class PurchasingSpecialist {
         bill.setPurchasingSpecialist(null);
 
     }
+
+
 
     private void checkArguments(String firstName, String lastName, String email) {
         if (isEmpty(firstName)) {

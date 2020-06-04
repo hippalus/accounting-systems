@@ -6,34 +6,7 @@ spring:
     password: postgres
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
-      jdbc-url: jdbc:postgresql://localhost:5432/accounting-db-dev
-      driver-class-name: org.postgresql.Driver
-      pool-name: accountingSystemCP
-      connection-test-query: SELECT 1
-      maximum-pool-size: 5
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-      naming:
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-    show-sql: true
-    open-in-view: false
-server:
-  port: 8080
-
-
----
-
-spring:
-  profiles: docker
-  application:
-    name: accounting-system
-  datasource:
-    username: postgres
-    password: postgres
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      jdbc-url: jdbc:postgresql://dbpostgresql:5432/accounting-db
+      jdbc-url: jdbc:postgresql://localhost:5432/accounting-db-dev?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=Turkey
       driver-class-name: org.postgresql.Driver
       pool-name: accountingSystemCP
       connection-test-query: SELECT 1
@@ -47,3 +20,35 @@ spring:
     open-in-view: false
 server:
   port: 8080
+purchasingspecialist:
+  limitValue: 50000.0
+
+---
+
+
+
+spring:
+  profiles: docker
+  application:
+    name: accounting-system
+  datasource:
+    username: postgres
+    password: postgres
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      jdbc-url: jdbc:postgresql://dbpostgresql:5432/accounting-db?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=Turkey
+      driver-class-name: org.postgresql.Driver
+      pool-name: accountingSystemCP
+      connection-test-query: SELECT 1
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+    show-sql: true
+    open-in-view: false
+server:
+  port: 8080
+purchasingspecialist:
+  limitValue: 50000.0

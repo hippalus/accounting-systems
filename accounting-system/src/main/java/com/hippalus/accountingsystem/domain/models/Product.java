@@ -14,7 +14,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "product", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "price"})})
+@Table(name = "product")
 public class Product {
     @Id
     @NotNull
@@ -22,7 +22,9 @@ public class Product {
     private Long id;
     @NotNull
     private String name;
+
     @NotNull
+    @Column(name = "pirice")
     private Money price;
 
     @Builder

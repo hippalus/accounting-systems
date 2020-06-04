@@ -12,6 +12,8 @@ spring:
     hibernate:
       ddl-auto: create-drop
       naming:
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
     show-sql: true
     open-in-view: false
+purchasingspecialist:
+  limitValue: 50000.0

@@ -8,8 +8,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static com.hippalus.accountingsystem.domain.models.BillState.*;
 import static java.util.Objects.isNull;
@@ -18,6 +17,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table(name = "bill", uniqueConstraints = {@UniqueConstraint(columnNames = {"billNo"})})
 public class Bill {
 
     @Id
@@ -25,9 +25,9 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NotNull // specific to this requirement. so there might be data duplication.
-    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    private Product product;
+    @NotNull
+    @OneToMany(cascade ={CascadeType.ALL},fetch = FetchType.LAZY,orphanRemoval = true)
+    private List<Product> products =new ArrayList<>();
 
     @NotNull
     private String billNo;
@@ -42,27 +42,38 @@ public class Bill {
     private BillState state;
 
     @Builder
-    private Bill(Long id, Product product, String billNo, PurchasingSpecialist purchasingSpecialist, BillState state) {
-        checkArguments(product, billNo, purchasingSpecialist);
+    private Bill(Long id, List<Product> products, String billNo, PurchasingSpecialist purchasingSpecialist, BillState state) {
+        checkArguments(products, billNo, purchasingSpecialist);
         this.id = id;
-        this.product = product;
+        this.products = products;
         this.billNo = billNo;
         this.state=state;
         this.purchasingSpecialist = purchasingSpecialist;
     }
 
     public static Bill create(BillCreateCommand cmd) {
-        return Bill.builder()
-                .product(Product.create(cmd.getProduct()))
+        Bill bill = Bill.builder()
                 .billNo(cmd.getBillNo())
+                .products(new ArrayList<>())
                 .purchasingSpecialist(PurchasingSpecialist.create(cmd.getPurchasingSpecialist()))
                 .state(WAITING_APPROVE)
                 .build();
-
+        bill.addProduct(Product.create(cmd.getProduct()));
+        return bill;
     }
 
+    public void addProduct(final Product product) {
+        if(isNull(product)){
+            return;
+        }
+        this.products.add(product);
+    }
+
+
     public Money totalPrice() {
-        return this.product.getPrice();
+        return this.products.stream()
+                .map(Product::getPrice)
+                .reduce(Money.ZERO,Money::add);
     }
 
     public boolean isApproved() {
@@ -89,7 +100,7 @@ public class Bill {
         this.state = newState;
     }
 
-    private void checkArguments(Product product, String billNo, PurchasingSpecialist purchasingSpecialist) {
+    private void checkArguments(List<Product> product, String billNo, PurchasingSpecialist purchasingSpecialist) {
         if (isNull(purchasingSpecialist)) {
             throw new IllegalArgumentException("Purchasing specialist is required.");
         }
@@ -109,7 +120,7 @@ public class Bill {
         Bill bill = (Bill) o;
 
         if (!Objects.equals(id, bill.id)) return false;
-        if (!Objects.equals(product, bill.product)) return false;
+        if (!Objects.equals(products, bill.products)) return false;
         if (!Objects.equals(billNo, bill.billNo)) return false;
         if (!Objects.equals(purchasingSpecialist, bill.purchasingSpecialist))
             return false;
@@ -119,7 +130,7 @@ public class Bill {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (product != null ? product.hashCode() : 0);
+        result = 31 * result + (products != null ? products.hashCode() : 0);
         result = 31 * result + (billNo != null ? billNo.hashCode() : 0);
         result = 31 * result + (purchasingSpecialist != null ? purchasingSpecialist.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
@@ -130,7 +141,7 @@ public class Bill {
     public String toString() {
         return new StringJoiner(", ", Bill.class.getSimpleName() + "[", "]")
                 .add("id=" + id)
-                .add("product=" + product)
+                .add("product=" + products)
                 .add("billNo='" + billNo + "'")
                 .add("purchasingSpecialist=" + purchasingSpecialist)
                 .add("state=" + state)
