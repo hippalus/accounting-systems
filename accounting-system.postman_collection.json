@@ -1,0 +1,165 @@
+{
+	"variables": [],
+	"info": {
+		"name": "accounting-system",
+		"_postman_id": "05e165a8-73bd-b10a-ee68-68ae904771fe",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "search",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/bills/search",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"state\": \"APPROVED\",\n\"firstName\":\"John\",\n\"lastName\":\"Doe\",\n\"email\":\"john@doe.com\",\n\"billNo\":\"TR000\"\n}\n\n\t\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "search 2",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/bills/search",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"state\": \"UNAPPROVED\",\n\"email\":\"john@doe.com\",\n\"billNo\":\"TR000\"\n}\n\n\t\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get all bills",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/bills",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\"email\":\"test@test2.com\"\n\t\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create bill 2",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/addbill",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"firstName\":\"John\",\n\"lastName\":\"Doe\",\n\"email\":\"john@doe.com\",\n\"productName\":\"Monster GTX\",\n\"price\":10000,\n\"billNo\":\"TR001\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create bill",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/addbill",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"firstName\":\"John\",\n\"lastName\":\"Doe\",\n\"email\":\"john@doe.com\",\n\"productName\":\"USB DISC\",\n\"price\":30,\n\"billNo\":\"TR000\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create un approved bill",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/addbill",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"firstName\":\"John\",\n\"lastName\":\"Doe\",\n\"email\":\"john@doe.com\",\n\"productName\":\"MSI\",\n\"price\":5000000,\n\"billNo\":\"TR003\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get all purchasing specialist",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/purchasingspecialist",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get purchasing spec by id",
+			"request": {
+				"url": "localhost:8080/api/v1/accounting/purchasingspecialist/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
